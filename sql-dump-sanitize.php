@@ -15,9 +15,6 @@
  *   BACKUP_DESTINATION = /home/user/me/backups
  */
 
-// Get some *.inc files we need.
-require_once "core/includes/password.inc";
-
 // Load up the config variables.
 $config = parse_ini_file('config.ini');
 $db_user = $config['DB_USER'];
@@ -27,11 +24,29 @@ $db_host = $config['DB_HOST'];
 $backdrop_root = $config['BACKDROP_ROOT'];
 $backup_destination = $config['BACKUP_DESTINATION'];
 
-// TODO: pass argument for quiet.
-$quiet = FALSE;
+// Get some *.inc files we need.
+require_once "$backdrop_root/core/includes/bootstrap.inc";
+require_once "$backdrop_root/core/includes/password.inc";
 
-// TODO: pass argument for sanitize.
-$sanitize = FALSE;
+// Check which options were passed in on the command line.
+if (in_array('--quiet', $argv) || in_array('-q', $argv)) {
+  $quiet = TRUE;
+}
+else {
+  $quiet = FALSE;
+}
+if (in_array('--sanitize', $argv) || in_array('-s', $argv)) {
+  $sanitize = TRUE;
+}
+else {
+  $sanitize = FALSE;
+}
+if (in_array('--rollover', $argv) || in_array('-r', $argv)) {
+  $rollover = TRUE;
+}
+else {
+  $rollover = FALSE;
+}
 
 if ($sanitize) {
   _sanitize($db_user, $db_password, $db_host, $db_name);
@@ -51,11 +66,13 @@ $nice_name = $sanitize ? "$db_name-$date-sanatized" : "$db_name-$date";
 exec("mv $backup_destination/$file_name.sql $backup_destination/$nice_name.sql");
 
 // Give feedback if the --quiet option is not set.
-if (file_exists("$backup_destination/$file_name.sql") && !$quiet) {
-  print "\n\t\tBackup successful: $backup_destination/$file_name.sql\n\n";
-}
-else {
-  print "\n\t\tSanitized backup failed: Perhaps check your config.ini settings?\n\n";
+if (!$quiet) {
+  if (file_exists("$backup_destination/$nice_name.sql")) {
+    print "\n\t\tBackup successful: $backup_destination/$nice_name.sql\n\n";
+  }
+  else {
+    print "\n\t\tBackup failed: Perhaps check your config.ini settings?\n\n";
+  }
 }
 
 // Remove the tmp_db2 database.
@@ -63,14 +80,10 @@ if ($sanitize) {
   exec("echo \"drop database tmp_db2\" | mysql -u $db_user -p$db_password");
 }
 
-// TODO: set flag for --rollover_backups.
-$rollover = TRUE;
 if ($rollover) {
-  // Do it once for the backups.
   _rollover_backups($backup_destination);
-  // Do it again for the sanitized backups.
-  _rollover_backups($backup_destination . "/sanitized");
 }
+
 /**
  * Helper function to optionally sanitize the database backup.
  *
@@ -104,6 +117,7 @@ function _sanitize($db_user, $db_password, $db_host, $db_name) {
     $stmt->execute();
 
     $result = $stmt->fetchAll();
+    $password = user_hash_password('password');
 
     $i = 0;
     foreach($result as $r) {
@@ -111,7 +125,10 @@ function _sanitize($db_user, $db_password, $db_host, $db_name) {
       $mail = $r['mail'];
       if ($uid != 0) {
         $update = "update users
-          set mail=\"user+$i@localhost\", init=\"user+$i@localhost\"
+          set
+            mail=\"user+$i@localhost\",
+            init=\"user+$i@localhost\",
+            pass=\"$password\"
           where uid = $uid;";
         $exec = $conn->prepare($update);
         $exec->execute();
@@ -147,7 +164,6 @@ function _rollover_backups($backup_destination, $num_keep = 3) {
     }
   }
   ksort($filemtime_keyed_array);
-  print_r($filemtime_keyed_array);
   $newes_bups_first = array_reverse($filemtime_keyed_array);
   $k = 0;
   foreach ($newes_bups_first as $bup) {
