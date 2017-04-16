@@ -77,7 +77,7 @@ if (!$quiet) {
 
 // Remove the tmp_db2 database.
 if ($sanitize) {
-  exec("echo \"drop database tmp_db2\" | mysql -u $db_user -p$db_password");
+  //exec("echo \"drop database tmp_db2\" | mysql -u $db_user -p$db_password");
 }
 
 if ($rollover) {
@@ -107,6 +107,9 @@ function _sanitize($db_user, $db_password, $db_host, $db_name) {
 
   // Dump DB and pipe into tmp_db2.
   exec("mysqldump -h $db_host -u $db_user -p$db_password $db_name | mysql -h $db_host -u $db_user -p$db_password tmp_db2");
+
+  // Clear the cache% tables.
+  _truncate_cache_tables($db_user, $db_password, $db_host, $db_name);
 
   // Get mysql connection to $db_name.
   try {
@@ -171,5 +174,44 @@ function _rollover_backups($backup_destination, $num_keep = 3) {
       exec("rm $backup_destination/$bup");
     }
     $k++;
+  }
+}
+
+/**
+ * Helper function to truncate cache tables.
+ * @param string $db_user
+ *   Database user with permission to create and drop databases.
+ *   Passed in via DB_USER in config.ini.
+ *
+ * @param string $db_password
+ *   Password of the $db_user; passed in DB_PASSWORD via config.ini.
+ *
+ * @param string $db_host
+ *   Usually 'localhost' passed in via DB_HOST in config.ini.
+ *
+ * @param string $db_name
+ *   The database to sanitize and backup.
+ *   Passed in via DB_NAME in config.ini.
+ */
+function _truncate_cache_tables($db_user, $db_password, $db_host, $db_name) {
+  try {
+    $conn = new PDO("mysql:host=$db_host;dbname=tmp_db2", $db_user, $db_password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $sql = "SELECT concat('TRUNCATE TABLE `', TABLE_NAME, '`;')
+      FROM INFORMATION_SCHEMA.TABLES
+      WHERE TABLE_NAME LIKE 'cache%' and table_schema=\"$db_name\";";
+
+    $statement = $conn->prepare($sql);
+    $statement->execute();
+
+    $result = $statement->fetchAll();
+    foreach ($result as $r) {
+      $clear_statement = $conn->prepare($r[0]);
+      $clear_statement->execute();
+    }
+  }
+  catch(PDOException $e) {
+    echo "Error: " . $e->getMessage();
   }
 }
