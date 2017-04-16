@@ -77,7 +77,7 @@ if (!$quiet) {
 
 // Remove the tmp_db2 database.
 if ($sanitize) {
-  //exec("echo \"drop database tmp_db2\" | mysql -u $db_user -p$db_password");
+  exec("echo \"drop database tmp_db2\" | mysql -u $db_user -p$db_password");
 }
 
 if ($rollover) {
