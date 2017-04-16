@@ -56,6 +56,7 @@ if ($sanitize) {
 }
 
 // Dump DB to file.
+date_default_timezone_set('EST');
 $date = date('F-j-Y-Gis');
 $file_name = $sanitize ? "$db_name-$date-sanatized" : "$db_name-$date";
 exec("mkdir -p $backup_destination");
