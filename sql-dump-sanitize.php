@@ -23,6 +23,7 @@ $db_name = $config['DB_NAME'];
 $db_host = $config['DB_HOST'];
 $backdrop_root = $config['BACKDROP_ROOT'];
 $backup_destination = $config['BACKUP_DESTINATION'];
+$num_keep = $config['NUM_KEEP'];
 
 // Get some *.inc files we need.
 require_once "$backdrop_root/core/includes/bootstrap.inc";
@@ -81,7 +82,7 @@ if ($sanitize) {
 }
 
 if ($rollover) {
-  _rollover_backups($backup_destination);
+  _rollover_backups($backup_destination, $num_keep);
 }
 
 /**
