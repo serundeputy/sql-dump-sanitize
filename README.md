@@ -41,7 +41,7 @@ Copy the `config.ini.example` file to `config.ini`
 
 Usage
 ---
-#### One time use.
+#### One time use Database Backups
 * `php path/to/sql-dump-sanitize.php`
   * This will create a backup of the database written to the
   `BACKUP_DESTINATION` specified in `config.ini`.
@@ -52,6 +52,14 @@ Usage
   Sanitized backups are placed in `BACKUP_DESTINATION`/sanitized subdirectory.
   * `--rollover` (`-r` alias) remove stale backups where stale is defined by the
   `NUM_KEEP` config variable.
+
+#### One time use files directory Backups
+* `php path/to/files-backup.php`
+  * This will create a backup of the files directory written to the
+  `BACKKUP_DESTINATION/files_backups` specified in `config.ini`
+* Options
+  * `--rollover_files` (`rf` alias) remove stale files dierectory backups where
+  stale is defined by the `NUM_KEEP` config variable.
 
 #### To run periodically on cron.
 * Set a server cron task to run the script on a schedule (daily, weekly, monthly
@@ -64,7 +72,14 @@ cron job would look like this:
 # 3. Entry: Day of the month when the process will be started [1-28/29/30/31]
 # 4. Entry: Month of the year when the process will be started [1-12]
 # 5. Entry: Weekday when the process will be started [0-6] [0 is Sunday]
+
+# Database backup #
+###################
 5 8 * * 6 {/absolute/path/to/php} {/path/to/script/}sql-dump-sanitize.php --quiet
+
+# files directory backup #
+###################
+5 10 * * 6 {/absolute/path/to/php} {/path/to/script/}files-backup.php --rollover_files
 ```
 
 Happy backups ;)
