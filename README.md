@@ -78,7 +78,7 @@ cron job would look like this:
 5 8 * * 6 {/absolute/path/to/php} {/path/to/script/}sql-dump-sanitize.php --quiet
 
 # files directory backup #
-###################
+##########################
 5 10 * * 6 {/absolute/path/to/php} {/path/to/script/}files-backup.php --rollover_files
 ```
 
