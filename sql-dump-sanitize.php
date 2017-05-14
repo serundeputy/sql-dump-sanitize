@@ -60,17 +60,17 @@ date_default_timezone_set('EST');
 $date = date('F-j-Y-Gis');
 $file_name = $sanitize ? "$db_name-$date-sanatized" : "$db_name-$date";
 exec("mkdir -p $backup_destination");
-exec("mysqldump -h $db_host -u$db_user -p$db_password $db_name > $backup_destination/$file_name.sql");
+exec("mysqldump -h $db_host -u$db_user -p$db_password $db_name | gzip > $backup_destination/$file_name.sql.gz");
 
 // Get nice name.
 $db_name = $config['DB_NAME'];
 $nice_name = $sanitize ? "$db_name-$date-sanatized" : "$db_name-$date";
-exec("mv $backup_destination/$file_name.sql $backup_destination/$nice_name.sql");
+exec("mv $backup_destination/$file_name.sql.gz $backup_destination/$nice_name.sql.gz");
 
 // Give feedback if the --quiet option is not set.
 if (!$quiet) {
-  if (file_exists("$backup_destination/$nice_name.sql")) {
-    print "\n\t\tBackup successful: $backup_destination/$nice_name.sql\n\n";
+  if (file_exists("$backup_destination/$nice_name.sql.gz")) {
+    print "\n\t\tBackup successful: $backup_destination/$nice_name.sql.gz\n\n";
   }
   else {
     print "\n\t\tBackup failed: Perhaps check your config.ini settings?\n\n";
@@ -159,9 +159,8 @@ function _rollover_backups($backup_destination, $num_keep = 3) {
   $filemtime_keyed_array = [];
   $bups = scandir($backup_destination);
   foreach ($bups as $key => $b) {
-    if (strpos($b, '.sql') === FALSE) {
+    if (strpos($b, '.sql.gz') === FALSE) {
       unset($bups[$key]);
-      // ignore; no action needed.
     }
     else {
       $my_key = filemtime("$backup_destination/$b");
