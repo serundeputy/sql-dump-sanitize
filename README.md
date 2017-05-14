@@ -79,7 +79,7 @@ cron job would look like this:
 
 # files directory backup #
 ###################
-5 8 * * 6 {/absolute/path/to/php} {/path/to/script/}files-backup.php --rollover_files
+5 10 * * 6 {/absolute/path/to/php} {/path/to/script/}files-backup.php --rollover_files
 ```
 
 Happy backups ;)
