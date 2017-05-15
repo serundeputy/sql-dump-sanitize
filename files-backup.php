@@ -24,6 +24,7 @@ else {
 }
 
 // Get timestamp.
+date_default_timezone_set('EST');
 $date = date('F-j-Y-Gis');
 
 // Make backup.
