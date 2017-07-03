@@ -30,9 +30,10 @@ $date = date('F-j-Y-Gis');
 // Make backup.
 exec(
   "tar czf files-$date.tar.gz -C $backdrop_root files/ &&
-  mkdir -p $destination/files_backups
-  mv files-$date.tar.gz $destination/files_backups"
+  mkdir -p $destination/files_backups;"
 );
+
+//mv files-$date.tar.gz $destination/files_backups"
 
 if ($rollover_files) {
   _rollover_files_backups($destination, $num_keep);
