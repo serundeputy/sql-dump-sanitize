@@ -68,7 +68,9 @@ exec("mysqldump -h $db_host -u$db_user -p$db_password $db_name | gzip > $backup_
 // Get nice name.
 $db_name = $config['DB_NAME'];
 $nice_name = $db_name . "-db-" . $date;
-$nice_name = $sanitize ? $nice_name . "-sanatized" : $nice_name;
+if ($sanitize) {
+  $nice_name .= "-sanatized";
+}
 exec("mv $backup_destination/$file_name.sql.gz $backup_destination/$nice_name.sql.gz");
 
 // Give feedback if the --quiet option is not set.
