@@ -23,7 +23,7 @@ $db_name = $config['DB_NAME'];
 $db_host = $config['DB_HOST'];
 $backdrop_root = $config['BACKDROP_ROOT'];
 $backup_destination = $config['BACKUP_DESTINATION'];
-$num_keep = $config['NUM_KEEP'];
+$backups_to_keep = $config['NUM_KEEP'];
 
 // Get some *.inc files we need.
 require_once "$backdrop_root/core/includes/bootstrap.inc";
@@ -57,14 +57,18 @@ if ($sanitize) {
 
 // Dump DB to file.
 date_default_timezone_set('EST');
-$date = date('F-j-Y-Gis');
-$file_name = $sanitize ? "$db_name-$date-sanatized" : "$db_name-$date";
+$date = date('Ymd-Gis');
+$file_name = $db_name . "-db-" . $date;
+if ($sanitize) {
+  $file_name .= "-sanatized";
+}
 exec("mkdir -p $backup_destination");
 exec("mysqldump -h $db_host -u$db_user -p$db_password $db_name | gzip > $backup_destination/$file_name.sql.gz");
 
 // Get nice name.
 $db_name = $config['DB_NAME'];
-$nice_name = $sanitize ? "$db_name-$date-sanatized" : "$db_name-$date";
+$nice_name = $db_name . "-db-" . $date;
+$nice_name = $sanitize ? $nice_name . "-sanatized" : $nice_name;
 exec("mv $backup_destination/$file_name.sql.gz $backup_destination/$nice_name.sql.gz");
 
 // Give feedback if the --quiet option is not set.
@@ -83,7 +87,7 @@ if ($sanitize) {
 }
 
 if ($rollover) {
-  _rollover_backups($backup_destination, $num_keep);
+  _rollover_backups($backup_destination, $backups_to_keep);
 }
 
 /**
@@ -152,15 +156,15 @@ function _sanitize($db_user, $db_password, $db_host, $db_name) {
  * @param string $backup_destination
  *   The path to the directory where you would like to delete stale backups.
  *
- * @param int $num_keep
+ * @param int $backups_to_keep
  *   The number of backups you would like to keep.  Defaults to 3.
  */
-function _rollover_backups($backup_destination, $num_keep = 3) {
+function _rollover_backups($backup_destination, $backups_to_keep = 3) {
   $filemtime_keyed_array = [];
-  $bups = scandir($backup_destination);
-  foreach ($bups as $key => $b) {
+  $backups = scandir($backup_destination);
+  foreach ($backups as $key => $b) {
     if (strpos($b, '.sql.gz') === FALSE) {
-      unset($bups[$key]);
+      unset($backups[$key]);
     }
     else {
       $my_key = filemtime("$backup_destination/$b");
@@ -168,10 +172,10 @@ function _rollover_backups($backup_destination, $num_keep = 3) {
     }
   }
   ksort($filemtime_keyed_array);
-  $newes_bups_first = array_reverse($filemtime_keyed_array);
+  $newest_backups_first = array_reverse($filemtime_keyed_array);
   $k = 0;
-  foreach ($newes_bups_first as $bup) {
-    if ($k > ($num_keep - 1)) {
+  foreach ($newest_backups_first as $bup) {
+    if ($k > ($backups_to_keep - 1)) {
       exec("rm $backup_destination/$bup");
     }
     $k++;

@@ -13,7 +13,7 @@ if (!isset($config)) {
 // Get path to files directory.
 $backdrop_root = $config['BACKDROP_ROOT'];
 $destination = $config['BACKUP_DESTINATION'];
-$num_keep = $config['NUM_KEEP'];
+$backups_to_keep = $config['NUM_KEEP'];
 
 // Check which options were passed in on the command line.
 if (in_array('--rollover_files', $argv) || in_array('-rf', $argv)) {
@@ -25,17 +25,17 @@ else {
 
 // Get timestamp.
 date_default_timezone_set('EST');
-$date = date('F-j-Y-Gis');
+$date = date('Ymd-Gis');
 
 // Make backup.
 exec(
-  "tar czf files-$date.tar.gz -C $backdrop_root files/ &&
+  "tar czf backdropcmsorg-files-$date.tar.gz -C $backdrop_root files/ &&
   mkdir -p $destination/files_backups
-  mv files-$date.tar.gz $destination/files_backups"
+  mv backdropcmsorg-files-$date.tar.gz $destination/files_backups"
 );
 
 if ($rollover_files) {
-  _rollover_files_backups($destination, $num_keep);
+  _rollover_files_backups($destination, $backups_to_keep);
 }
 
 /**
@@ -44,15 +44,15 @@ if ($rollover_files) {
  * @param string $backup_destination
  *   The path to the directory where you would like to delete stale backups.
  *
- * @param int $num_keep
+ * @param int $backups_to_keep
  *   The number of backups you would like to keep.  Defaults to 3.
  */
-function _rollover_files_backups($backup_destination, $num_keep = 3) {
+function _rollover_files_backups($backup_destination, $backups_to_keep = 3) {
   $filemtime_keyed_array = [];
-  $bups = scandir($backup_destination . '/files_backups');
-  foreach ($bups as $key => $b) {
+  $backups = scandir($backup_destination . '/files_backups');
+  foreach ($backups as $key => $b) {
     if (strpos($b, '.tar.gz') === FALSE) {
-      unset($bups[$key]);
+      unset($backups[$key]);
     }
     else {
       $my_key = filemtime("$backup_destination/files_backups/$b");
@@ -60,11 +60,11 @@ function _rollover_files_backups($backup_destination, $num_keep = 3) {
     }
   }
   ksort($filemtime_keyed_array);
-  $newes_bups_first = array_reverse($filemtime_keyed_array);
+  $newest_backups_first = array_reverse($filemtime_keyed_array);
   $k = 0;
-  foreach ($newes_bups_first as $bup) {
-    if ($k > ($num_keep - 1)) {
-      exec("rm $backup_destination/files_backups/$bup");
+  foreach ($newest_backups_first as backup) {
+    if ($k > ($backups_to_keep - 1)) {
+      exec("rm $backup_destination/files_backups/backup");
     }
     $k++;
   }
