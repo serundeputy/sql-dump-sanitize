@@ -4,7 +4,6 @@
  * Backup the files directory of a Backdrop CMS site.
  */
 
-
 // Check if we already have config array.
 if (!isset($config)) {
  $config = parse_ini_file('config.ini');
@@ -14,6 +13,7 @@ if (!isset($config)) {
 $backdrop_root = $config['BACKDROP_ROOT'];
 $destination = $config['BACKUP_DESTINATION'];
 $num_keep = $config['NUM_KEEP'];
+$db_name = $config['DB_NAME'];
 
 // Check which options were passed in on the command line.
 if (in_array('--rollover_files', $argv) || in_array('-rf', $argv)) {
@@ -29,7 +29,7 @@ $date = date('F-j-Y-Gis');
 
 // Make backup.
 exec(
-  "tar czf files-$date.tar.gz -C $backdrop_root files/ &&
+  "tar czf $db_name-files-$date.tar.gz -C $backdrop_root files/ &&
   mkdir -p $destination/files_backups;"
 );
 
