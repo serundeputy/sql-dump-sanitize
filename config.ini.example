@@ -4,5 +4,6 @@ DB_NAME = backdrop
 DB_HOST = localhost
 BACKDROP_ROOT = /var/www/html
 BACKUP_DESTINATION = /home/user/me/backups
+TMP_DB = name_of_temp_database
 ; Number of backups you would like to keep before starting to roll off.
 NUM_KEEP = 3
