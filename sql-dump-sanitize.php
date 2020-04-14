@@ -2,7 +2,7 @@
 
 /**
  * @file
- *   Backup and sanitize Backdrop CMS database to the filesystem.
+ * Backup and sanitize Backdrop CMS database to the filesystem.
  *
  * Required configuration variables. Copy the config.ini.example file to
  *   config.ini and replace with values for your server.
@@ -125,7 +125,7 @@ function _sanitize($db_user, $db_password, $db_host, $db_name) {
     $password = user_hash_password('password');
 
     $i = 0;
-    foreach($result as $r) {
+    foreach ($result as $r) {
       $uid = $r['uid'];
       $mail = $r['mail'];
       if ($uid != 0) {
@@ -180,6 +180,7 @@ function _rollover_backups($backup_destination, $num_keep = 3) {
 
 /**
  * Helper function to truncate cache tables.
+ *
  * @param string $db_user
  *   Database user with permission to create and drop databases.
  *   Passed in via DB_USER in config.ini.

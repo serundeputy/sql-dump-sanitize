@@ -1,17 +1,19 @@
 Backup the Database
-----
+===================
 
 The purpose of this script is to backup and optionally `--sanitize` the database
 of your Backdrop CMS website.
 
 Requirements
----
+------------
+
 * Linux server
 * Backdrop CMS website
 * PHP CLI
 
 Installation and Configuration
----
+-------------------------------
+
 Clone this directory down to your filesystem. Perhaps to your home directory.
   * `git clone git@github.com:serundeputy/sql-dump-sanitize.git`
   * `cd sql-dump-sanitize`
@@ -40,7 +42,8 @@ Copy the `config.ini.example` file to `config.ini`
   ```
 
 Usage
----
+-----
+
 #### One time use Database Backups
 * `php path/to/sql-dump-sanitize.php`
   * This will create a backup of the database written to the

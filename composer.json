@@ -1,0 +1,5 @@
+{
+    "require": {
+        "backdrop/coder": "^1.0"
+    }
+}

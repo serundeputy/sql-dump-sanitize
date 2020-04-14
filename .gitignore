@@ -24,3 +24,15 @@ config.ini
 ######################
 *.log
 *.sql
+
+# Backups #
+###########
+backups
+
+# Test Site #
+#############
+web
+
+# vendor #
+##########
+vendor

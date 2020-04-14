@@ -1,13 +1,14 @@
 <?php
 
 /**
+ * @file
  * Backup the files directory of a Backdrop CMS site.
  */
 
 
 // Check if we already have config array.
 if (!isset($config)) {
- $config = parse_ini_file('config.ini');
+  $config = parse_ini_file('config.ini');
 }
 
 // Get path to files directory.

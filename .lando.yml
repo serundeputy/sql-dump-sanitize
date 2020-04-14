@@ -1,0 +1,25 @@
+name: sql-dump-sanitize
+recipe: backdrop
+config:
+  php: 7.3
+  database: mariadb:10.3
+  webroot: web
+  backdrush: 1.x-1.x
+
+services:
+  appserver:
+    build:
+      - composer i
+      - /app/vendor/bin/phpcs --config-set vendor/backdrop/coder/coder_sniffer/Backdrop
+
+tooling:
+  drush:
+    service: appserver
+    cmd: drush --root=web --uri=https://sql-dump-sanitze.lndo.site
+  phpcs:
+    service: appserver
+    cmd:
+      - "/app/vendor/bin/phpcs -n --report=full --standard=Backdrop --ignore=vendor/*,README.md --extensions=install,module,php,inc,theme"
+  "sql-dump-sanitize":
+    service: appserver
+		cmd: php sql-dump-sanitize.php
