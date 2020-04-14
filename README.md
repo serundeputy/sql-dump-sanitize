@@ -55,6 +55,7 @@ Usage
   Sanitized backups are placed in `BACKUP_DESTINATION`/sanitized subdirectory.
   * `--rollover` (`-r` alias) remove stale backups where stale is defined by the
   `NUM_KEEP` config variable.
+  * `--latest` (`-l` alias) provide a symlink to the latest backup named `DB_NAME-latest.sql.gz`.
 
 #### One time use files directory Backups
 * `php path/to/files-backup.php`

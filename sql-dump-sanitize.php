@@ -48,6 +48,12 @@ if (in_array('--rollover', $argv) || in_array('-r', $argv)) {
 else {
   $rollover = FALSE;
 }
+if (in_array('--latest', $argv) || in_array('-l', $argv)) {
+  $latest = TRUE;
+}
+else {
+  $latest = FALSE;
+}
 
 if ($sanitize) {
   _sanitize($db_user, $db_password, $db_host, $db_name);
@@ -65,7 +71,12 @@ exec("mysqldump -h $db_host -u$db_user -p$db_password $db_name | gzip > $backup_
 // Get nice name.
 $db_name = $config['DB_NAME'];
 $nice_name = $sanitize ? "$db_name-$date-sanatized" : "$db_name-$date";
-exec("mv $backup_destination/$file_name.sql.gz $backup_destination/$nice_name.sql.gz");
+if ($latest) {
+  if (file_exists("$backup_destination/$db_name-latest.sql.gz")) {
+    unlink("$backup_destination/$db_name-latest.sql.gz")
+  }
+  symlink("$backup_destination/$file_name.sql.gz", "$db_name-latest.sql.gz");
+}
 
 // Give feedback if the --quiet option is not set.
 if (!$quiet) {
