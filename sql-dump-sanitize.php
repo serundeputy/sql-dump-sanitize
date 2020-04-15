@@ -78,7 +78,7 @@ if ($latest) {
       unlink("$backup_destination/$db_name-latest.sql.gz");
     }
   }
-  symlink("$backup_destination/$file_name.sql.gz", "$backup_destination/$db_name-latest.sql.gz");
+  symlink("$backup_destination/$nice_name.sql.gz", "$backup_destination/$db_name-latest.sql.gz");
 }
 
 // Give feedback if the --quiet option is not set.
