@@ -23,6 +23,12 @@ if (in_array('--rollover_files', $argv) || in_array('-rf', $argv)) {
 else {
   $rollover_files = FALSE;
 }
+if (in_array('--latest', $argv) || in_array('-l', $argv)) {
+  $latest = TRUE;
+}
+else {
+  $latest = FALSE;
+}
 
 // Get timestamp.
 date_default_timezone_set('EST');
@@ -34,6 +40,14 @@ exec(
   mkdir -p $destination/files_backups
   mv files-$date.tar.gz $destination/files_backups"
 );
+if ($latest) {
+  if (file_exists("$destination/files-latest.tar.gz")) {
+    if (is_link("$destination/files-latest.tar.gz")) {
+      unlink("$destination/files-latest.tar.gz");
+    }
+  }
+  symlink("$destination/files-$date.tar.gz", "$destination/files-latest.tar.gz");
+}
 
 if ($rollover_files) {
   _rollover_files_backups($destination, $num_keep);
