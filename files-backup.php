@@ -46,7 +46,7 @@ if ($latest) {
       unlink("$destination/files-latest.tar.gz");
     }
   }
-  symlink("$destination/files-$date.tar.gz", "$destination/files-latest.tar.gz");
+  symlink("$destination/files_backups/files-$date.tar.gz", "$destination/files_backups/files-latest.tar.gz");
 }
 
 if ($rollover_files) {
