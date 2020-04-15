@@ -86,4 +86,11 @@ cron job would look like this:
 5 10 * * 6 {/absolute/path/to/php} {/path/to/script/}files-backup.php --rollover_files
 ```
 
+#### Deployments and master branch
+
+BackdropCMS.org is using this to backup the b.org, f.b.org, and api.b.org databases and files.
+
+* When pushing to the `master` branch these changes are automatically pulled to the server on system cron
+* As a result make sure you test your things in a branch before pushing or merging to `master`
+
 Happy backups ;)
