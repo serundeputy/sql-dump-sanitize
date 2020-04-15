@@ -73,13 +73,13 @@ $db_name = $config['DB_NAME'];
 $nice_name = $sanitize ? "$db_name-$date-sanatized" : "$db_name-$date";
 exec("mv $backup_destination/$file_name.sql.gz $backup_destination/$nice_name.sql.gz");
 if ($latest) {
+  $sanitized = $sanitize ? '-sanitized' : '';
   if (file_exists("$backup_destination/$db_name-latest.sql.gz")) {
     if (is_link("$backup_destination/$db_name-latest.sql.gz")) {
-      $sanitized = $sanitize ? '-sanitized' : '';
       unlink("$backup_destination/$db_name-latest$sanitized.sql.gz");
     }
   }
-  symlink("$backup_destination/$nice_name.sql.gz", "$backup_destination/$db_name-latest.sql.gz");
+  symlink("$backup_destination/$nice_name.sql.gz", "$backup_destination/$db_name-latest$sanitized.sql.gz");
 }
 
 // Give feedback if the --quiet option is not set.
