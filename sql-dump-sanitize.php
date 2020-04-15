@@ -174,6 +174,7 @@ function _rollover_backups($backup_destination, $num_keep = 3) {
   $filemtime_keyed_array = [];
   $bups = scandir($backup_destination);
   foreach ($bups as $key => $b) {
+    if (is_link($b)) continue;
     if (strpos($b, '.sql.gz') === FALSE) {
       unset($bups[$key]);
     }
