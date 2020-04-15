@@ -75,7 +75,7 @@ exec("mv $backup_destination/$file_name.sql.gz $backup_destination/$nice_name.sq
 if ($latest) {
   $sanitized = $sanitize ? '-sanitized' : '';
   if (file_exists("$backup_destination/$db_name-latest$sanitized.sql.gz")) {
-    if (is_link("$backup_destination/$db_name-latest$sanitize.sql.gz")) {
+    if (is_link("$backup_destination/$db_name-latest$sanitized.sql.gz")) {
       unlink("$backup_destination/$db_name-latest$sanitized.sql.gz");
     }
   }
