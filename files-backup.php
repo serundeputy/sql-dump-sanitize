@@ -41,9 +41,9 @@ exec(
   mv files-$date.tar.gz $destination/files_backups"
 );
 if ($latest) {
-  if (file_exists("$destination/files-latest.tar.gz")) {
-    if (is_link("$destination/files-latest.tar.gz")) {
-      unlink("$destination/files-latest.tar.gz");
+  if (file_exists("$destination/files_backups/files-latest.tar.gz")) {
+    if (is_link("$destination/files_backups/files-latest.tar.gz")) {
+      unlink("$destination/files_backups/files-latest.tar.gz");
     }
   }
   symlink("$destination/files_backups/files-$date.tar.gz", "$destination/files_backups/files-latest.tar.gz");
