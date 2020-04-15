@@ -74,7 +74,9 @@ $nice_name = $sanitize ? "$db_name-$date-sanatized" : "$db_name-$date";
 exec("mv $backup_destination/$file_name.sql.gz $backup_destination/$nice_name.sql.gz");
 if ($latest) {
   if (file_exists("$backup_destination/$db_name-latest.sql.gz")) {
-    unlink("$backup_destination/$db_name-latest.sql.gz");
+    if (is_link("$backup_destination/$db_name-latest.sql.gz")) {
+      unlink("$backup_destination/$db_name-latest.sql.gz");
+    }
   }
   symlink("$backup_destination/$file_name.sql.gz", "$backup_destination/$db_name-latest.sql.gz");
 }
