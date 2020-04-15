@@ -66,6 +66,7 @@ function _rollover_files_backups($backup_destination, $num_keep = 3) {
   $filemtime_keyed_array = [];
   $bups = scandir($backup_destination . '/files_backups');
   foreach ($bups as $key => $b) {
+    if (is_link($b)) continue;
     if (strpos($b, '.tar.gz') === FALSE) {
       unset($bups[$key]);
     }
