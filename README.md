@@ -33,6 +33,8 @@ Copy the `config.ini.example` file to `config.ini`
   DB_PASSWORD = pass
   ; Database to perform backups and optional `--sanitize`
   DB_NAME = backdrop
+  ; Temporary database to use when sanitizing. It will be created automatically.
+  DB_TEMP = temp
   ; Host of the Database usually localhost, but could be an external name or IP
   DB_HOST = localhost
   ; Root directory of the Backdrop installation
