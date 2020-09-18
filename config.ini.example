@@ -7,3 +7,5 @@ BACKDROP_ROOT = /var/www/html
 BACKUP_DESTINATION = /home/user/me/backups
 ; Number of backups you would like to keep before starting to roll off.
 NUM_KEEP = 3
+; Timezone to use for dates in filenames. See https://www.php.net/manual/en/timezones.php
+TIMEZONE = UTC

@@ -15,6 +15,7 @@ $db_name = $config['DB_NAME'];
 $backdrop_root = $config['BACKDROP_ROOT'];
 $destination = $config['BACKUP_DESTINATION'];
 $num_keep = $config['NUM_KEEP'];
+$timezone = $config['TIMEZONE'];
 
 // Check which options were passed in on the command line.
 if (in_array('--rollover_files', $argv) || in_array('-rf', $argv)) {
@@ -31,7 +32,7 @@ else {
 }
 
 // Get timestamp.
-date_default_timezone_set('EST');
+date_default_timezone_set($timezone);
 $date = date('F-j-Y-Gis');
 
 // Make backup.
