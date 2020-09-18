@@ -1,6 +1,7 @@
 DB_USER = root
 DB_PASSWORD = pass
 DB_NAME = backdrop
+DB_TEMP = temp
 DB_HOST = localhost
 BACKDROP_ROOT = /var/www/html
 BACKUP_DESTINATION = /home/user/me/backups

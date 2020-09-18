@@ -20,6 +20,7 @@ $config = parse_ini_file('config.ini');
 $db_user = $config['DB_USER'];
 $db_password = $config['DB_PASSWORD'];
 $db_name = $config['DB_NAME'];
+$db_temp = $config['DB_TEMP'];
 $db_host = $config['DB_HOST'];
 $backdrop_root = $config['BACKDROP_ROOT'];
 $backup_destination = $config['BACKUP_DESTINATION'];
@@ -56,8 +57,8 @@ else {
 }
 
 if ($sanitize) {
-  _sanitize($db_user, $db_password, $db_host, $db_name);
-  $db_name = 'tmp_db2';
+  _sanitize($db_user, $db_password, $db_host, $db_name, $db_temp);
+  $db_name = $db_temp;
   $backup_destination = $backup_destination . '/sanitized';
 }
 
@@ -92,9 +93,9 @@ if (!$quiet) {
   }
 }
 
-// Remove the tmp_db2 database.
+// Remove the DB_TEMP database.
 if ($sanitize) {
-  exec("echo \"drop database tmp_db2\" | mysql -u $db_user -p$db_password");
+  exec("echo \"drop database $db_temp\" | mysql -u $db_user -p$db_password");
 }
 
 if ($rollover) {
@@ -118,19 +119,19 @@ if ($rollover) {
  *   The database to sanitize and backup.
  *   Passed in via DB_NAME in config.ini.
  */
-function _sanitize($db_user, $db_password, $db_host, $db_name) {
-  // Create the tmp_db2 database.
-  exec("echo \"create database tmp_db2\" | mysql -u $db_user -p$db_password");
+function _sanitize($db_user, $db_password, $db_host, $db_name, $db_temp) {
+  // Create the DB_TEMP database.
+  exec("echo \"create database $db_temp\" | mysql -u $db_user -p$db_password");
 
-  // Dump DB and pipe into tmp_db2.
-  exec("mysqldump -h $db_host -u $db_user -p$db_password $db_name | mysql -h $db_host -u $db_user -p$db_password tmp_db2");
+  // Dump DB and pipe into DB_TEMP.
+  exec("mysqldump -h $db_host -u $db_user -p$db_password $db_name | mysql -h $db_host -u $db_user -p$db_password $db_temp");
 
   // Clear the cache% tables.
-  _truncate_cache_tables($db_user, $db_password, $db_host, $db_name);
+  _truncate_cache_tables($db_user, $db_password, $db_host, $db_name, $db_temp);
 
   // Get mysql connection to $db_name.
   try {
-    $conn = new PDO("mysql:host=$db_host;dbname=tmp_db2", $db_user, $db_password);
+    $conn = new PDO("mysql:host=$db_host;dbname=$db_temp", $db_user, $db_password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $sql = "select * from users where 1;";
     $stmt = $conn->prepare($sql);
@@ -211,9 +212,9 @@ function _rollover_backups($backup_destination, $num_keep = 3) {
  *   The database to sanitize and backup.
  *   Passed in via DB_NAME in config.ini.
  */
-function _truncate_cache_tables($db_user, $db_password, $db_host, $db_name) {
+function _truncate_cache_tables($db_user, $db_password, $db_host, $db_name, $db_temp) {
   try {
-    $conn = new PDO("mysql:host=$db_host;dbname=tmp_db2", $db_user, $db_password);
+    $conn = new PDO("mysql:host=$db_host;dbname=$db_temp", $db_user, $db_password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $sql = "SELECT concat('TRUNCATE TABLE `', TABLE_NAME, '`;')
