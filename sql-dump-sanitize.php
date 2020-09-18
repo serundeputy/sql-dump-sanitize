@@ -24,6 +24,7 @@ $db_host = $config['DB_HOST'];
 $backdrop_root = $config['BACKDROP_ROOT'];
 $backup_destination = $config['BACKUP_DESTINATION'];
 $num_keep = $config['NUM_KEEP'];
+$timezone = $config['TIMEZONE'];
 
 // Get some *.inc files we need.
 require_once "$backdrop_root/core/includes/bootstrap.inc";
@@ -62,7 +63,7 @@ if ($sanitize) {
 }
 
 // Dump DB to file.
-date_default_timezone_set('EST');
+date_default_timezone_set($timezone);
 $date = date('F-j-Y-Gis');
 $file_name = $sanitize ? "$db_name-$date-sanatized" : "$db_name-$date";
 exec("mkdir -p $backup_destination");
