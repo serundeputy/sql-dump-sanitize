@@ -19,23 +19,20 @@ Clone this directory down to your filesystem. Perhaps to your home directory.
   * `cd sql-dump-sanitize`
 
 Copy the `config.ini.example` file to `config.ini`
-  * `cp config.ini.exaple config.ini`
+  * `cp config.ini.example config.ini`
   * Set the config variables in `config.ini` to values appropriate for your
   server and Backdrop database.
-
-  * Required configuration variables. Copy the config.ini.example file to
-  config.ini and replace with values for your server.
 
   ```php
   ; This user must have access to create and drop databases to use `--sanitize`
   DB_USER = root
   ; Password of the above user
   DB_PASSWORD = pass
-  ; Database to perform backups and optional `--sanitize`
+  ; Database to perform backups of and optionally `--sanitize`
   DB_NAME = backdrop
   ; Temporary database to use when sanitizing. It will be created automatically.
   DB_TEMP = temp
-  ; Host of the Database usually localhost, but could be an external name or IP
+  ; Host of the database; usually localhost, but could be an external name or IP
   DB_HOST = localhost
   ; Root directory of the Backdrop installation
   BACKDROP_ROOT = /var/www/html
@@ -46,31 +43,34 @@ Copy the `config.ini.example` file to `config.ini`
 Usage
 -----
 
-#### One time use Database Backups
+#### One time use database backups
 * `php path/to/sql-dump-sanitize.php`
   * This will create a backup of the database written to the
   `BACKUP_DESTINATION` specified in `config.ini`.
-* Options
+* Options:
   * `--quiet` (`-q` alias) suppress standard output (good for running as cron
-    job)
+  job).
   * `--sanitize` (`-s` alias) sanitize user email addresses for the backup.
-  Sanitized backups are placed in `BACKUP_DESTINATION`/sanitized subdirectory.
+  Sanitized backups are placed in `BACKUP_DESTINATION/sanitized` subdirectory.
   * `--rollover` (`-r` alias) remove stale backups where stale is defined by the
   `NUM_KEEP` config variable.
-  * `--latest` (`-l` alias) provide a symlink to the latest backup named `DB_NAME-latest.sql.gz`.
+  * `--latest` (`-l` alias) provide a symlink to the latest backup named
+  `DB_NAME-latest[-sanitized].sql.gz`.
 
-#### One time use files directory Backups
+#### One time use files directory backups
 * `php path/to/files-backup.php`
   * This will create a backup of the files directory written to the
-  `BACKKUP_DESTINATION/files_backups` specified in `config.ini`
-* Options
-  * `--rollover_files` (`rf` alias) remove stale files dierectory backups where
+  `BACKUP_DESTINATION/files_backups` specified in `config.ini`.
+* Options:
+  * `--rollover_files` (`-rf` alias) remove stale files directory backups where
   stale is defined by the `NUM_KEEP` config variable.
+  * `--latest` (`-l` alias) provide a symlink to the latest backup named
+  `files-latest.tar.gz`.
 
-#### To run periodically on cron.
+#### To run periodically on cron
 * Set a server cron task to run the script on a schedule (daily, weekly, monthly
-or any and/or combination). For example a weekly on 8.05am Saturday morning; the
-cron job would look like this:
+or any combination). For example, weekly at 8.05am Saturday morning; the cron
+job would look like this:
 
 ```bash
 # 1. Entry: Minute when the process will be started [0-60]
@@ -83,16 +83,9 @@ cron job would look like this:
 ###################
 5 8 * * 6 {/absolute/path/to/php} {/path/to/script/}sql-dump-sanitize.php --quiet
 
-# files directory backup #
+# Files directory backup #
 ##########################
-5 10 * * 6 {/absolute/path/to/php} {/path/to/script/}files-backup.php --rollover_files
+5 8 * * 6 {/absolute/path/to/php} {/path/to/script/}files-backup.php --rollover_files
 ```
-
-#### Deployments and master branch
-
-BackdropCMS.org is using this to backup the b.org, f.b.org, and api.b.org databases and files.
-
-* When pushing to the `master` branch these changes are automatically pulled to the server on system cron
-* As a result make sure you test your things in a branch before pushing or merging to `master`
 
 Happy backups ;)
